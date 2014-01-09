@@ -48,5 +48,5 @@ Criterion = (function(){
 		capture: capture
 	}
 })();
-
+test = Criterion.capture();
 console.log(jQuery.toJSON(Criterion.capture()));

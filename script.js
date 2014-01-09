@@ -29,28 +29,50 @@ Ntut = (function(){
 	function getSubjects(semesters){
 		var result = [];
 
+		console.log("semesters: " + semesters.length);
 		for(var i = 0; i < semesters.length; i++){
 			var semester = $(semesters[i]);
 			var rows = semester.find("tr[object=subject]");
 
 			for(var j = 0; j < rows.length; j++)
 			{
-				result.push(toSubject(rows[i]));
+				var obj = toSubject(rows[j]);
+				if(!isFail(obj)){
+					result.push(obj);
+				}
 			}
 		}
 		return result;
 	}
 
+	function isFail(subject){
+		if(!isNaN(subject.score) && subject.score >= 60){
+			return false;
+		}
+		console.log(subject.subjectName + " is Fail");
+		return true;
+	}
+
 	function toSubject(row){
 		var result = {};
 		var cells = $(row).find("th");
+		var criterion;
 
 		result.courseId = $(cells[0]).html().replace(/\n/g, "").replace(/ /g, "");
+		//result.category = $(cells[1]).html().replace(/\n/g, "").replace(/ /g, "");// 要用課程標準中的
 		result.category = $(cells[1]).html().replace(/\n/g, "").replace(/ /g, "");
 		result.subjectName = $(cells[2]).children("a").html();
 		result.subjectId = $(cells[3]).html().replace(/\n/g, "").replace(/ /g, "");
 		result.credit = $(cells[5]).html().replace(/\n/g, "").replace(/ /g, "");
 		result.score = $(cells[6]).html().replace(/\n/g, "").replace(/ /g, "");
+
+		// 查詢課程標準的對應符號
+		if(!criterions[result.subjectId]){// 若查不到則記錄LOG
+			console.log(result.subjectId + "-" + result.subjectName);
+		}
+		criterion = criterions[result.subjectId] || {category: "☆", remark: "　"};
+		result.category = criterion.category;
+		result.remark = criterion.remark;// 備註有時會用到
 		return result;
 	}
 
