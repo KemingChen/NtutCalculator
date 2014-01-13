@@ -7,12 +7,34 @@ Ntut = (function(){
 	function calculate(){
 		var subjects;
 		var semesters = $("table");
+		var items;
 
 		mark(semesters);
 		subjects = getSubjects(semesters);
-		
+		items = normalAnalysis(subjects, {"○": 0, "△": 0, "☆": 0, "●": 0, "▲": 0, "★": 0});
 
+		console.log(symbol);
+		console.log(items);
+		console.log(advanceAnalysis(subjects, {"＊": 0, "◎": 0, "■": 0}));
 		test = subjects;
+	}
+
+	function normalAnalysis(subjects, items){
+		for(var i in subjects){
+			items[subjects[i].category] += subjects[i].credit;
+		}
+
+		return items;
+	}
+
+	function advanceAnalysis(subjects, items){// Mark 分析
+		for(var i in subjects){
+			if(items[subjects[i].remark] != undefined){// 若有此 Mark 則計算
+				items[subjects[i].remark] += subjects[i].credit;
+			}
+		}
+
+		return items;
 	}
 
 	function mark(semesters){
@@ -63,21 +85,40 @@ Ntut = (function(){
 		result.category = $(cells[1]).html().replace(/\n/g, "").replace(/ /g, "");
 		result.subjectName = $(cells[2]).children("a").html();
 		result.subjectId = $(cells[3]).html().replace(/\n/g, "").replace(/ /g, "");
-		result.credit = $(cells[5]).html().replace(/\n/g, "").replace(/ /g, "");
+		result.credit = (Number)($(cells[5]).html().replace(/\n/g, "").replace(/ /g, "").replace(".0", ""));
 		result.score = $(cells[6]).html().replace(/\n/g, "").replace(/ /g, "");
 
 		// 查詢課程標準的對應符號
-		if(!criterions[result.subjectId]){// 若查不到則記錄LOG
-			console.log(result.subjectId + "-" + result.subjectName);
+		if(result.category == "通"){// 計算博雅選修
+			criterion = {category: "△", remark: "　"};
+			result.category = criterion.category;
 		}
-		criterion = criterions[result.subjectId] || {category: "☆", remark: "　"};
-		result.category = criterion.category;
-		result.remark = criterion.remark;// 備註有時會用到
+		else if(!criterions[result.subjectId]){// 若查不到則記錄LOG
+			console.log("Can't Find: " + result.subjectId + "-" + result.subjectName);
+			// 應該還要去對應"課程名稱"可能可以抵免
+		}
+		else{
+			criterion = criterions[result.subjectId];
+			result.category = criterion.category;
+			result.remark = criterion.remark;// 備註有時會用到
+		}
 		return result;
 	}
 
+	function setCriterions(){
+		$.ajax({
+			url: "http://aps.ntut.edu.tw/course/tw/Cprog.jsp?format=-4&matric=7",
+			data: {
+				year: 99,
+				division: 823
+			}
+		}).done(function(xml){
+			console.log(xml);
+		});
+	}
+
 	return{
-		calculate: calculate
+		calculate: loadCriterions
 	}
 })();
 

@@ -40,6 +40,7 @@ Criterion = (function(){
 
 		result.category = $(cells[2]).children("a").html();
 		result.subjectId = $(cells[3]).children("a").html();
+		result.subjectId = $(cells[3]).children("a").html();
 		result.remark = $(cells[9]).html().replace(/\n/g, "").replace(/ /g, "");
 		return result;
 	}
@@ -48,5 +49,5 @@ Criterion = (function(){
 		capture: capture
 	}
 })();
-test = Criterion.capture();
+
 console.log(jQuery.toJSON(Criterion.capture()));
