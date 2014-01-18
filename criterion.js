@@ -25,13 +25,17 @@ return'"'+str+'"';};}(jQuery));
 Criterion = (function(){
 	function capture(){
 		var criterions = {};
+		var rCriterions = {};
 		var rows = $("table").first().find("tr");
 
 		for(var i = 1; i < rows.length; i++){
 			var obj = toCriterion(rows[i]);
 			criterions[obj.subjectId] = obj;
+			rCriterions[obj.subjectName] = obj.subjectId;
 		}
-		return criterions;
+
+		console.log("var criterions = " + jQuery.toJSON(criterions));
+		console.log("var rCriterions = " + jQuery.toJSON(rCriterions));
 	}
 
 	function toCriterion(row){
@@ -40,7 +44,7 @@ Criterion = (function(){
 
 		result.category = $(cells[2]).children("a").html();
 		result.subjectId = $(cells[3]).children("a").html();
-		result.subjectId = $(cells[3]).children("a").html();
+		result.subjectName = $(cells[4]).html().replace(/\n/g, "").replace(/ /g, "");
 		result.remark = $(cells[9]).html().replace(/\n/g, "").replace(/ /g, "");
 		return result;
 	}
@@ -49,5 +53,4 @@ Criterion = (function(){
 		capture: capture
 	}
 })();
-
-console.log(jQuery.toJSON(Criterion.capture()));
+Criterion.capture();
