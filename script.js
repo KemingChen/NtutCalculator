@@ -10,12 +10,12 @@ var stipulate = "1.最低畢業學分：139學分。<br />\
 8.本課程科目表適用99學年度入學新生。";
 
 var test;
+var calculateResult;// 到時候要放入Ntut中
+var criterionResult;// 到時候要放入Ntut中
 
 Ntut = (function(){
-	var initial = false;
 	var symbol = {"○": "部訂共同必修", "△": "校訂共同必修", "☆": "共同選修", "●": "部訂專業必修", "▲": "校訂專業必修", "★": "專業選修"};
-	var calculateResult;
-
+	
 	function calculate(){
 		var subjects;
 		var semesters = $("table");
@@ -147,20 +147,46 @@ Ntut = (function(){
 		console.log(markAnalysis(subjects, {"＊": 0, "◎": 0, "■": 0}));
 		console.log(stipulate);
 
+		var tdStyle = "padding-left: 5px;padding-right: 10px;";
 		var CRBody = calculateResult.children("tbody");
 		CRBody.empty();
+
+		// 畢業標準
+		criterionResult.html(stipulate);
+
+		// 基本學分統計
 		for(var i in symbol){
-			CRBody.append("<tr><td bgcolor='#99FF99'>　(" + i + ") " + symbol[i] + "　</td><td>　" + items[i] + "　</td></tr>");
+			var tr = $("<tr/>", {
+				align: "center",
+			})
+			.append($("<td/>", {
+				bgcolor: "#99FF99",
+				style: tdStyle,
+				text: i
+			}))
+			.append($("<td/>", {
+				bgcolor: "#99FF99",
+				style: tdStyle,
+				text: symbol[i]
+			}))
+			.append($("<td/>", {
+				style: tdStyle,
+				text: items[i]
+			}));
+			CRBody.append(tr);
 		}
 		calculateResult.show();
 		test = calculateResult;
 	}
 
 	function initialUI(){
-		if(!initial){
+		if(!calculateResult){
 			form = $("form");
 			form.first().append('　<input type="button" name="CalculateAll" value="計算學分" onclick="Ntut.calculate()">');
-
+			criterionResult = $("<table/>", {
+			    border: 1,
+			    width: "60%"
+			});
 			calculateResult = $('<table/>', {
 			    id: 'CalculateResult', 
 			    border: 1,
@@ -169,8 +195,8 @@ Ntut = (function(){
 			.append($("<thead/>"))
 			.append($("<tbody/>"));
 			form.after(calculateResult);
+			calculateResult.before(criterionResult).before("<br />");
 		}
-		initial = true;
 	}
 
 	return{
